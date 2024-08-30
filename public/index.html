@@ -10,29 +10,33 @@
     <div class="container">
         <h1>Upload Images</h1>
 
-        <div class="user-info">
-            <input type="text" id="name" name="name" placeholder="Your Name" required>
-            <input type="email" id="email" name="email" placeholder="Your Email" required>
-            <textarea id="message" name="message" placeholder="Your Message" required></textarea>
-        </div>
+        <form name="uploadForm" method="POST" enctype="multipart/form-data" data-netlify="true">
+            <input type="hidden" name="form-name" value="uploadForm">
 
-        <div class="upload-section">
-            <h2>Select Files</h2>
-            <input type="file" id="fileUpload" accept="image/*" multiple>
-            <div id="fileList"></div>
-        </div>
-
-        <div class="upload-section">
-            <h2>Or Drag & Drop Files</h2>
-            <div class="drag-drop-area" id="dragDropArea">
-                <p>Drag & Drop your files here</p>
+            <div class="user-info">
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+                <textarea id="message" name="message" placeholder="Your Message" required></textarea>
             </div>
-            <div id="dropFileList"></div>
-        </div>
 
-        <button id="submitBtn">Submit</button>
+            <div class="upload-section">
+                <h2>Select Files</h2>
+                <input type="file" id="fileUpload" name="files" accept="image/*" multiple required>
+                <div id="fileList"></div>
+            </div>
+
+            <div class="upload-section">
+                <h2>Or Drag & Drop Files</h2>
+                <div class="drag-drop-area" id="dragDropArea">
+                    <p>Drag & Drop your files here</p>
+                </div>
+                <div id="dropFileList"></div>
+            </div>
+
+            <button type="submit" id="submitBtn">Submit</button>
+        </form>
+
+        <script src="index.js"></script>
     </div>
-
-    <script src="index.js"></script>
 </body>
 </html>
