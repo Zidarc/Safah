@@ -1,18 +1,12 @@
 const nodemailer = require('nodemailer');
 const Busboy = require('busboy');
-const path = require('path');
-const fs = require('fs').promises;
-
-const uploadDir = '/tmp/uploads'; // Netlify's writable directory
-
-// Ensure the uploads directory exists
-fs.mkdir(uploadDir, { recursive: true }).catch(console.error);
 
 exports.handler = async (event) => {
     return new Promise((resolve, reject) => {
         const busboy = new Busboy({ headers: event.headers });
         const formData = {};
 
+        // Parse form fields
         busboy.on('field', (fieldname, value) => {
             formData[fieldname] = value;
         });
