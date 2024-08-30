@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append('message', document.getElementById('message').value);
     
         try {
-            const response = await fetch('/.netlify/functions/submit', {
+            const response = await fetch('https://safah.netlify.app.netlify/functions/submit', {
                 method: 'POST',
                 body: formData,
             });
