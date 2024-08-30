@@ -1,35 +1,32 @@
 const nodemailer = require('nodemailer');
-const formidable = require('formidable');
+const Busboy = require('busboy');
+const { promises: fs } = require('fs');
 const path = require('path');
-const fs = require('fs');
-const util = require('util');
-const { unlink } = require('fs').promises;
 
-// Ensure the uploads directory exists in Netlify's temporary storage
-const uploadDir = '/tmp/uploads';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
+const uploadDir = '/tmp/uploads';  // Netlify's writable directory
 
-// Promisify unlink function
-const unlinkAsync = util.promisify(fs.unlink);
+// Ensure the uploads directory exists
+fs.mkdir(uploadDir, { recursive: true }).catch(console.error);
 
 exports.handler = async (event) => {
     return new Promise((resolve, reject) => {
-        // Create an instance of formidable.IncomingForm
-        const form = new formidable.IncomingForm();
-        form.uploadDir = uploadDir;  // Specify the temporary upload directory
-        form.keepExtensions = true;  // Keep the file extensions
-        form.parse(event, async (err, fields, files) => {
-            if (err) {
-                console.error('Form parsing error:', err);
-                return resolve({
-                    statusCode: 500,
-                    body: 'Form parsing error: ' + err.message
-                });
-            }
+        const busboy = new Busboy({ headers: event.headers });
+        const files = [];
+        const formData = {};
 
-            const { name, email, message } = fields;
+        busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+            const filePath = path.join(uploadDir, filename);
+            files.push({ fieldname, filePath, filename });
+
+            file.pipe(fs.createWriteStream(filePath));
+        });
+
+        busboy.on('field', (fieldname, value) => {
+            formData[fieldname] = value;
+        });
+
+        busboy.on('finish', async () => {
+            const { name, email, message } = formData;
 
             if (!email) {
                 return resolve({
@@ -38,7 +35,6 @@ exports.handler = async (event) => {
                 });
             }
 
-            // Configure Nodemailer
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -47,10 +43,9 @@ exports.handler = async (event) => {
                 }
             });
 
-            // Create an array of attachments for the email
-            const attachments = Object.values(files).map(file => ({
-                filename: file.originalFilename || file.newFilename,
-                path: file.filepath
+            const attachments = files.map(file => ({
+                filename: file.filename,
+                path: file.filePath
             }));
 
             const mailOptions = {
@@ -62,11 +57,11 @@ exports.handler = async (event) => {
             };
 
             try {
-                const info = await transporter.sendMail(mailOptions);
-                console.log('Email sent:', info.response);
+                await transporter.sendMail(mailOptions);
+                console.log('Email sent successfully.');
 
                 // Clean up uploaded files
-                await Promise.all(attachments.map(file => unlinkAsync(file.path)));
+                await Promise.all(files.map(file => fs.unlink(file.filePath)));
 
                 resolve({
                     statusCode: 200,
@@ -80,5 +75,7 @@ exports.handler = async (event) => {
                 });
             }
         });
+
+        event.body.pipe(busboy);
     });
 };
