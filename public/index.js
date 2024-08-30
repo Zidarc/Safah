@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("fileUpload");
     const dragDropArea = document.getElementById("dragDropArea");
+    const submitBtn = document.getElementById("submitBtn");
 
     let droppedFiles = [];
 
@@ -33,4 +34,37 @@ document.addEventListener("DOMContentLoaded", () => {
             fileList.appendChild(fileItem);
         });
     }
+
+    submitBtn.addEventListener("click", async () => {
+        const inputFiles = fileInput.files;
+        const files = [...inputFiles, ...droppedFiles];
+    
+        if (files.length === 0) {
+            alert("Please select or drag and drop images to upload.");
+            return;
+        }
+    
+        const formData = new FormData();
+        files.forEach(file => formData.append('files', file));
+        formData.append('name', document.getElementById('name').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('message', document.getElementById('message').value);
+    
+        try {
+            const response = await fetch('/.netlify/functions/submit', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                alert('Images uploaded successfully!');
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to upload images: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while uploading images.');
+        }
+    });
 });
