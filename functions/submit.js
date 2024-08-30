@@ -2,8 +2,7 @@ const nodemailer = require('nodemailer');
 const formidable = require('formidable');
 const path = require('path');
 const fs = require('fs');
-const { promisify } = require('util');
-const { parse } = require('querystring');
+const util = require('util');
 const { unlink } = require('fs').promises;
 
 // Ensure the uploads directory exists in Netlify's temporary storage
@@ -12,12 +11,15 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
 
-exports.handler = async (event, context) => {
+// Promisify unlink function
+const unlinkAsync = util.promisify(fs.unlink);
+
+exports.handler = async (event) => {
     return new Promise((resolve, reject) => {
+        // Create an instance of formidable.IncomingForm
         const form = new formidable.IncomingForm();
         form.uploadDir = uploadDir;  // Specify the temporary upload directory
         form.keepExtensions = true;  // Keep the file extensions
-        
         form.parse(event, async (err, fields, files) => {
             if (err) {
                 console.error('Form parsing error:', err);
@@ -64,7 +66,7 @@ exports.handler = async (event, context) => {
                 console.log('Email sent:', info.response);
 
                 // Clean up uploaded files
-                await Promise.all(attachments.map(file => unlink(file.path)));
+                await Promise.all(attachments.map(file => unlinkAsync(file.path)));
 
                 resolve({
                     statusCode: 200,
