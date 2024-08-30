@@ -26,11 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
+            // Log the response status and text for debugging
+            console.log(`Response status: ${response.status}`);
+            const responseBody = await response.text();
+            console.log(`Response body: ${responseBody}`);
+
             if (response.ok) {
                 alert('Form submitted successfully!');
             } else {
-                const errorText = await response.text();
-                alert(`Failed to submit form: ${errorText}`);
+                alert(`Failed to submit form: ${responseBody}`);
             }
         } catch (error) {
             console.error('Error:', error);
