@@ -75,7 +75,6 @@ exports.handler = async (event) => {
             to: email,
             subject: 'Thank you for your submission!',
             text: `Hi ${name},\n\nThank you for your message: "${message}".\n\nWe have received your submission and will get back to you soon.`,
-            attachments: [{ filename: 'images.zip', path: zipPath }],
         };
 
         const adminMailOptions = {
