@@ -3,6 +3,14 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return {
@@ -21,7 +29,7 @@ exports.handler = async (event) => {
         };
     }
 
-    const { name, email, message} = formData;
+    const { name, email, message } = formData;
 
     if (!email) {
         return {
@@ -50,7 +58,7 @@ exports.handler = async (event) => {
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: 'Form submitted successfully! A confirmation email with the ZIP file has been sent.' }),
+            body: JSON.stringify({ message: 'Form submitted successfully! A confirmation email has been sent.' }),
         };
     } catch (error) {
         console.error('Error processing submission:', error);
