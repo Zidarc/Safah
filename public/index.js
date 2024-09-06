@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 await imagekit.upload({
                     file: file,
                     fileName: fileName,
-                    folder: `/uploads/${email}`,
+                    folder: `/Home/${email}`,
                     token: authData.token,
                     signature: authData.signature,
                     expire: authData.expire,
