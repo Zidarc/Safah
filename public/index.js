@@ -4,8 +4,8 @@ const output = document.getElementById("output");
 let imageList = [];
 
 const imagekit = new ImageKit({
-    publicKey:"public_XT2xiMLSDVPDCVgXODwralEaBso=",
-    urlEndpoint:"https://ik.imagekit.io/hmlgaiv6o", 
+    publicKey: "public_XT2xiMLSDVPDCVgXODwralEaBso=",
+    urlEndpoint: "https://ik.imagekit.io/hmlgaiv6o",
     authenticationEndpoint: "https://safah.netlify.app/.netlify/functions/imagekit-auth"
 });
 
@@ -51,7 +51,6 @@ fileInput.addEventListener("change", () => {
     });
 });
 
-
 dragDropArea.addEventListener("dragover", (e) => {
     e.preventDefault();
     dragDropArea.classList.add("dragover");
@@ -63,7 +62,6 @@ dragDropArea.addEventListener("dragleave", () => {
 
 dragDropArea.addEventListener("drop", (e) => {
     e.preventDefault();
-
     dragDropArea.classList.remove("dragover");
 
     Array.from(e.dataTransfer.files).forEach(file => {
@@ -75,7 +73,6 @@ dragDropArea.addEventListener("drop", (e) => {
         }
     });
 });
-
 
 document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.getElementById("submitBtn");
@@ -103,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const authData = await authResponse.json();
 
-                await imagekit.upload({
+                const uploadResponse = await imagekit.upload({
                     file: file,
                     fileName: fileName,
                     folder: `/Home/${email}`,
@@ -111,6 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     signature: authData.signature,
                     expire: authData.expire,
                 });
+
+                if (!uploadResponse || uploadResponse.error) {
+                    throw new Error("Failed to upload image to ImageKit");
+                }
             }
 
             const serverResponse = await fetch('https://safah.netlify.app/.netlify/functions/submit', {
@@ -123,6 +124,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (serverResponse.ok) {
                 alert('Form submitted successfully!');
+                // Clear form and images
+                document.querySelector('form').reset();
+                imageList = [];
+                updateImagePreview();
             } else {
                 const responseBody = await serverResponse.text();
                 alert(`Failed to submit form: ${responseBody}`);
