@@ -15,6 +15,10 @@ exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ error: 'Method Not Allowed' }),
         };
     }
@@ -25,6 +29,10 @@ exports.handler = async (event) => {
     } catch (error) {
         return {
             statusCode: 400,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ error: 'Invalid JSON' }),
         };
     }
@@ -34,6 +42,10 @@ exports.handler = async (event) => {
     if (!email) {
         return {
             statusCode: 400,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ error: 'Email address is required' }),
         };
     }
@@ -50,7 +62,6 @@ exports.handler = async (event) => {
             to: process.env.EMAIL_USER,
             subject: 'New Submission Received',
             text: `You have received a new submission from ${name} (${email}).\n\nMessage: ${message}`,
-            //attachments: [{ filename: 'images.zip', path: zipPath }],
         };
 
         await transporter.sendMail(userMailOptions);
@@ -58,12 +69,20 @@ exports.handler = async (event) => {
 
         return {
             statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ message: 'Form submitted successfully! A confirmation email has been sent.' }),
         };
     } catch (error) {
         console.error('Error processing submission:', error);
         return {
             statusCode: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ error: 'Error: ' + error.message }),
         };
     }
