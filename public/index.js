@@ -93,16 +93,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
+            console.log('Starting image upload process...');
             for (let i = 0; i < imageList.length; i++) {
                 const file = imageList[i];
                 const fileName = `${name}_${file.name}`;
-
+        
+                console.log(`Fetching authentication details for image ${i + 1}...`);
                 const authResponse = await fetch(imagekit.authenticationEndpoint);
                 if (!authResponse.ok) {
                     throw new Error("Failed to fetch auth details");
                 }
                 const authData = await authResponse.json();
-
+                console.log('Authentication details fetched successfully:', authData);
+        
+                console.log(`Uploading image ${i + 1}: ${fileName}...`);
                 const uploadResponse = await imagekit.upload({
                     file: file,
                     fileName: fileName,
@@ -110,12 +114,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     signature: authData.signature,
                     expire: authData.expire,
                 });
-
+        
                 if (!uploadResponse || uploadResponse.error) {
                     throw new Error("Failed to upload image to ImageKit");
                 }
+                console.log(`Image ${i + 1} uploaded successfully:`, uploadResponse);
             }
-
+        
+            console.log('Submitting form data...');
             const serverResponse = await fetch('https://safah.netlify.app/.netlify/functions/submit', {
                 method: 'POST',
                 headers: {
@@ -123,8 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ name, email, message }),
             });
-
+        
             if (serverResponse.ok) {
+                console.log('Form submitted successfully!');
                 alert('Form submitted successfully!');
                 // Clear form and images
                 document.querySelector('form').reset();
@@ -132,11 +139,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateImagePreview();
             } else {
                 const responseBody = await serverResponse.text();
+                console.error('Failed to submit form:', responseBody);
                 alert(`Failed to submit form: ${responseBody}`);
             }
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while uploading the images or submitting the form.');
         }
+        
     });
 });

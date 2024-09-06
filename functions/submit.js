@@ -12,7 +12,10 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.handler = async (event) => {
+    console.log('Received event:', JSON.stringify(event, null, 2));
+
     if (event.httpMethod !== 'POST') {
+        console.log('Method not allowed:', event.httpMethod);
         return {
             statusCode: 405,
             headers: {
@@ -26,7 +29,9 @@ exports.handler = async (event) => {
     let formData;
     try {
         formData = JSON.parse(event.body);
+        console.log('Parsed form data:', formData);
     } catch (error) {
+        console.error('Error parsing JSON:', error);
         return {
             statusCode: 400,
             headers: {
@@ -40,6 +45,7 @@ exports.handler = async (event) => {
     const { name, email, message } = formData;
 
     if (!email) {
+        console.log('Email address is missing.');
         return {
             statusCode: 400,
             headers: {
@@ -49,6 +55,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ error: 'Email address is required' }),
         };
     }
+
     try {
         const userMailOptions = {
             from: process.env.EMAIL_USER,
@@ -64,9 +71,13 @@ exports.handler = async (event) => {
             text: `You have received a new submission from ${name} (${email}).\n\nMessage: ${message}`,
         };
 
+        console.log('Sending user email:', userMailOptions);
         await transporter.sendMail(userMailOptions);
+
+        console.log('Sending admin email:', adminMailOptions);
         await transporter.sendMail(adminMailOptions);
 
+        console.log('Emails sent successfully.');
         return {
             statusCode: 200,
             headers: {
