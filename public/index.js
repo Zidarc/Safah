@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const fileName = `${name}_${file.name}`;
         
                 console.log(`Fetching authentication details for image ${i + 1}...`);
-                const authResponse = await fetch(imagekit.authenticationEndpoint);
+                const authResponse = await fetch("https://safah.netlify.app/.netlify/functions/imagekit-auth");
                 if (!authResponse.ok) {
                     throw new Error("Failed to fetch auth details");
                 }
