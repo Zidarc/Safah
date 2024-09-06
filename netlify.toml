@@ -1,6 +1,6 @@
 [build]
-  publish = "public"  # Directory where your static files are located
-  functions = "functions"  # Directory where your serverless functions are located
+  publish = "public"
+  functions = "functions"
 
 [[redirects]]
   from = "/*"

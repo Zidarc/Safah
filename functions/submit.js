@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 const fs = require('fs');
-const archiver = require('archiver');
 const path = require('path');
 
 exports.handler = async (event) => {
@@ -22,7 +21,7 @@ exports.handler = async (event) => {
         };
     }
 
-    const { name, email, message, fileUrls } = formData;
+    const { name, email, message} = formData;
 
     if (!email) {
         return {
@@ -30,46 +29,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ error: 'Email address is required' }),
         };
     }
-
-    // Download images from URLs and create a ZIP file
-    const downloadedFiles = [];
     try {
-        for (const [index, url] of fileUrls.entries()) {
-            const response = await axios({
-                url: url,
-                responseType: 'stream',
-            });
-            const filePath = path.join('/tmp', `image${index + 1}.jpg`);
-            const writer = fs.createWriteStream(filePath);
-            response.data.pipe(writer);
-            await new Promise((resolve, reject) => {
-                writer.on('finish', resolve);
-                writer.on('error', reject);
-            });
-            downloadedFiles.push({ path: filePath, name: `image${index + 1}.jpg` });
-        }
-
-        // Create ZIP file
-        const zipPath = path.join('/tmp', 'images.zip');
-        await new Promise((resolve, reject) => {
-            const output = fs.createWriteStream(zipPath);
-            const archive = archiver('zip', { zlib: { level: 9 } });
-            output.on('close', resolve);
-            archive.on('error', reject);
-            archive.pipe(output);
-            downloadedFiles.forEach(file => archive.file(file.path, { name: file.name }));
-            archive.finalize();
-        });
-
-        // Send emails with ZIP file attached
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
         const userMailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
@@ -82,7 +42,7 @@ exports.handler = async (event) => {
             to: process.env.EMAIL_USER,
             subject: 'New Submission Received',
             text: `You have received a new submission from ${name} (${email}).\n\nMessage: ${message}`,
-            attachments: [{ filename: 'images.zip', path: zipPath }],
+            //attachments: [{ filename: 'images.zip', path: zipPath }],
         };
 
         await transporter.sendMail(userMailOptions);
