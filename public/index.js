@@ -88,9 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             for (let i = 0; i < imageList.length; i++) {
                 const file = imageList[i];
-                const fileName = `${name}_${file.name}`; // Creating a unique filename
+                const fileName = `${name}_${file.name}`;
 
-                // Fetch authentication details from your serverless function
                 const authResponse = await fetch(imagekit.authenticationEndpoint);
                 if (!authResponse.ok) {
                     throw new Error("Failed to fetch auth details");
@@ -101,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 await imagekit.upload({
                     file: file,
                     fileName: fileName,
-                    folder: `/uploads/${email}`, // Creating a folder with the user's name
+                    folder: `/uploads/${email}`,
                     token: authData.token,
                     signature: authData.signature,
                     expire: authData.expire,
