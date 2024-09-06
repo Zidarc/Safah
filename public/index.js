@@ -3,18 +3,18 @@ const dragDropArea = document.getElementById("dragDropArea");
 const output = document.getElementById("output");
 let imageList = [];
 
-// SDK initialization for ImageKit
 const imagekit = new ImageKit({
-    publicKey: IMAGEKIT_PUBLIC_KEY, 
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT, 
+    publicKey:"public_XT2xiMLSDVPDCVgXODwralEaBso=",
+    urlEndpoint:"https://ik.imagekit.io/hmlgaiv6o", 
     authenticationEndpoint: "https://safah.netlify.app/.netlify/functions/imagekit-auth"
 });
 
-// Function to update image preview
 function updateImagePreview() {
     output.innerHTML = "";
+
     imageList.forEach((file, index) => {
         const reader = new FileReader();
+
         reader.onload = (e) => {
             const imgContainer = document.createElement("div");
             imgContainer.classList.add("img-container");
@@ -35,11 +35,11 @@ function updateImagePreview() {
             imgContainer.appendChild(removeBtn);
             output.appendChild(imgContainer);
         };
+
         reader.readAsDataURL(file);
     });
 }
 
-// Event listeners for file input and drag-and-drop
 fileInput.addEventListener("change", () => {
     Array.from(fileInput.files).forEach(file => {
         if (file.type.startsWith("image/")) {
@@ -51,13 +51,19 @@ fileInput.addEventListener("change", () => {
     });
 });
 
+
 dragDropArea.addEventListener("dragover", (e) => {
     e.preventDefault();
     dragDropArea.classList.add("dragover");
 });
 
+dragDropArea.addEventListener("dragleave", () => {
+    dragDropArea.classList.remove("dragover");
+});
+
 dragDropArea.addEventListener("drop", (e) => {
     e.preventDefault();
+
     dragDropArea.classList.remove("dragover");
 
     Array.from(e.dataTransfer.files).forEach(file => {
@@ -69,6 +75,7 @@ dragDropArea.addEventListener("drop", (e) => {
         }
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.getElementById("submitBtn");
@@ -96,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const authData = await authResponse.json();
 
-                // Upload image to ImageKit
                 await imagekit.upload({
                     file: file,
                     fileName: fileName,
@@ -107,17 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            // Send the user's information to your server
             const serverResponse = await fetch('https://safah.netlify.app/.netlify/functions/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    name: name,
-                    email: email,
-                    message: message
-                }),
+                body: JSON.stringify({ name, email, message }),
             });
 
             if (serverResponse.ok) {
