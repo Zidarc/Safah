@@ -1,5 +1,4 @@
-const cors = require('cors');
-app.use(cors());
+
 const fileInput = document.getElementById("fileUpload");
 const dragDropArea = document.getElementById("dragDropArea");
 const output = document.getElementById("output");
