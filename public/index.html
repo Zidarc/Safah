@@ -19,23 +19,17 @@
                 <textarea id="message" name="message" placeholder="Your Message" required></textarea>
             </div>
 
-            <div class="upload-section">
-                <h2>Select Files</h2>
-                <input type="file" id="fileUpload" name="files" accept="image/*" multiple required>
-                <div id="fileList"></div>
-            </div>
-
-            <div class="upload-section">
-                <h2>Or Drag & Drop Files</h2>
+            <div class="container1">
+                <input type="file" id="fileUpload" accept="image/*" multiple>
                 <div class="drag-drop-area" id="dragDropArea">
                     <p>Drag & Drop your files here</p>
                 </div>
-                <div id="dropFileList"></div>
             </div>
+            <div id="output"></div>
 
             <button type="submit" id="submitBtn">Submit</button>
         </form>
-
+        <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
         <script src="index.js"></script>
     </div>
 </body>

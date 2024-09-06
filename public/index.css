@@ -1,68 +1,166 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f0f0f0;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .container {
-    text-align: center;
     background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.upload-section {
-    margin: 20px 0;
+.container h1 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    text-align: center; 
+}
+
+.user-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-info input,
+.user-info textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    text-align: center;
+}
+
+.user-info textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.container1 {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
 #fileUpload {
-    margin-top: 10px;
-    padding: 10px;
+    margin-bottom: 15px;
+    padding: 12px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    max-width: 300px;
 }
 
 .drag-drop-area {
-    border: 2px dashed #ccc;
-    padding: 20px;
+    border: 2px dashed #007bff;
+    padding: 30px;
     border-radius: 10px;
-    background-color: white;
+    background-color: #e9f7fe;
     cursor: pointer;
     width: 100%;
-    margin-top: 10px;
+    max-width: 400px;
+    margin: 20px auto;
+    position: relative;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.drag-drop-area p {
+    margin: 0;
+    color: #007bff;
+    font-size: 18px;
 }
 
 .drag-drop-area.dragover {
-    border-color: #000;
+    background-color: #d0ebff;
 }
 
-#fileList, #dropFileList {
-    margin-top: 10px;
-    text-align: left;
+#output {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    width: 100%;
 }
 
-#fileList img, #dropFileList img {
-    max-width: 100px;
-    margin-right: 10px;
-    margin-top: 10px;
+#output img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+#output img:hover {
+    transform: scale(1.05);
 }
 
 button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+    body {
+        justify-content: flex-start;
+    }
+
+    .container {
+        padding: 20px;
+        margin: 10px;
+        box-shadow: none;
+    }
+
+    #fileUpload {
+        max-width: 100%;
+    }
+
+    .drag-drop-area {
+        width: 100%;
+        padding: 20px;
+    }
+
+    #output {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    #output img {
+        max-width: 100%;
+        height: auto;
+    }
 }
