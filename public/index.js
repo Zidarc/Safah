@@ -93,13 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let i = 0; i < imageList.length; i++) {
                 const file = imageList[i];
                 const fileName = `${name}_${file.name}`;
-
+        
                 const authResponse = await fetch(imagekit.authenticationEndpoint);
                 if (!authResponse.ok) {
-                    throw new Error("Failed to fetch auth details");
+                    throw new Error("Failed to fetch auth details: " + authResponse.statusText);
                 }
                 const authData = await authResponse.json();
-
+        
                 const uploadResponse = await imagekit.upload({
                     file: file,
                     fileName: fileName,
@@ -108,12 +108,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     signature: authData.signature,
                     expire: authData.expire,
                 });
-
+        
+                console.log('Upload Response:', uploadResponse);
+        
                 if (!uploadResponse || uploadResponse.error) {
-                    throw new Error("Failed to upload image to ImageKit");
+                    throw new Error("Failed to upload image to ImageKit: " + (uploadResponse.error ? uploadResponse.error.message : "Unknown error"));
                 }
             }
-
+        
             const serverResponse = await fetch('https://safah.netlify.app/.netlify/functions/submit', {
                 method: 'POST',
                 headers: {
@@ -121,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ name, email, message }),
             });
-
+        
             if (serverResponse.ok) {
                 alert('Form submitted successfully!');
                 // Clear form and images
@@ -133,8 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(`Failed to submit form: ${responseBody}`);
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error:', error.message);
             alert('An error occurred while uploading the images or submitting the form.');
         }
+        
     });
 });
