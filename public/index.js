@@ -1,3 +1,4 @@
+
 const fileInput = document.getElementById("fileUpload");
 const dragDropArea = document.getElementById("dragDropArea");
 const output = document.getElementById("output");
@@ -90,38 +91,38 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const folderName = `Home/${name}_${email}`;
+        const folderName = `/${name}_${email}`;
 
         try {
-            // Fetch authentication details once
-            console.log('Fetching authentication details...');
-            const authResponse = await fetch("https://safah.netlify.app/.netlify/functions/imagekit-auth");
-            if (!authResponse.ok) {
-                throw new Error("Failed to fetch auth details");
-            }
-            const authData = await authResponse.json();
-            console.log('Authentication details fetched successfully:', authData);
-
-            // Upload each image using the same auth details
+            console.log('Starting image upload process...');
             for (let i = 0; i < imageList.length; i++) {
                 const file = imageList[i];
                 const fileName = `${name}_${file.name}`;
-
+        
+                console.log(`Fetching authentication details for image ${i + 1}...`);
+                const authResponse = await fetch("https://safah.netlify.app/.netlify/functions/imagekit-auth");
+                if (!authResponse.ok) {
+                    throw new Error("Failed to fetch auth details");
+                }
+                const authData = await authResponse.json();
+                console.log('Authentication details fetched successfully:', authData);
+        
                 console.log(`Uploading image ${i + 1}: ${fileName}...`);
                 const uploadResponse = await imagekit.upload({
                     file: file,
                     fileName: fileName,
+                    folder: folderName,
                     token: authData.token,
                     signature: authData.signature,
                     expire: authData.expire,
                 });
-
+        
                 if (!uploadResponse || uploadResponse.error) {
                     throw new Error("Failed to upload image to ImageKit");
                 }
                 console.log(`Image ${i + 1} uploaded successfully:`, uploadResponse);
             }
-
+        
             console.log('Submitting form data...');
             const serverResponse = await fetch('https://safah.netlify.app/.netlify/functions/submit', {
                 method: 'POST',
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ name, email, message }),
             });
-
+        
             if (serverResponse.ok) {
                 console.log('Form submitted successfully!');
                 alert('Form submitted successfully!');
@@ -147,6 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error:', error);
             alert('An error occurred while uploading the images or submitting the form.');
         }
-
+        
     });
 });
