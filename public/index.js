@@ -91,6 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const folderName = `${name}_${email}`;
+
         try {
             console.log('Starting image upload process...');
             for (let i = 0; i < imageList.length; i++) {
@@ -109,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const uploadResponse = await imagekit.upload({
                     file: file,
                     fileName: fileName,
+                    folder: folderName,
                     token: authData.token,
                     signature: authData.signature,
                     expire: authData.expire,
